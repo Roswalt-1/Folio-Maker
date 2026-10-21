@@ -38,7 +38,9 @@ class PortfolioWorkflowTest extends TestCase
             ->assertDontSee('Shape your story, projects and design in one place.')
             ->assertDontSee('YOUR CANVAS, YOUR RULES')
             ->assertDontSee('Unsaved changes')
-            ->assertSee('>Home</a>', false)
+            ->assertSee('<span>Home</span>', false)
+            ->assertSee('aria-hidden="true" width="18" height="18"', false)
+            ->assertSee('id="save-status" role="status" aria-live="polite"', false)
             ->assertDontSee('Portfolio generator')
             ->assertSee('data-site-theme-toggle')
             ->assertSee('Overview');
@@ -46,7 +48,7 @@ class PortfolioWorkflowTest extends TestCase
         $this->get(route('portfolios.index'))
             ->assertOk()
             ->assertSee('<title>Home | Folio Maker</title>', false)
-            ->assertSee('>Home</a>', false)
+            ->assertSee('<span>Home</span>', false)
             ->assertSee('My')
             ->assertSee('portfolios.')
             ->assertSee('New portfolio')
@@ -165,6 +167,43 @@ class PortfolioWorkflowTest extends TestCase
             ->assertSee('<meta property="og:title" content="Quiet Forms | Folio Maker">', false)
             ->assertSee('North Studio');
         $this->get(route('portfolios.edit', $portfolio))->assertOk()->assertSee('North Studio');
+    }
+
+    public function test_home_cards_reflect_saved_templates_and_default_missing_templates_to_minimal(): void
+    {
+        $user = $this->makeUser();
+        foreach ([
+            ['Minimal portfolio', 'minimal'],
+            ['Card portfolio', 'card'],
+            ['Sidebar portfolio', 'sidebar'],
+            ['Legacy portfolio', null],
+        ] as [$title, $template]) {
+            $user->portfolios()->create([
+                'title' => $title,
+                'description' => "Description for {$title}.",
+                'category' => $template === null ? null : 'Design',
+                'appearance_data' => $template === null ? null : ['style' => ['template' => $template]],
+            ]);
+        }
+
+        $response = $this->actingAs($user)->get(route('portfolios.index'));
+
+        $response->assertOk()
+            ->assertSee('portfolio-card-minimal', false)
+            ->assertSee('portfolio-card-card', false)
+            ->assertSee('portfolio-card-sidebar', false)
+            ->assertSee('Minimal')
+            ->assertSee('Card-based')
+            ->assertSee('Sidebar')
+            ->assertSee('Legacy portfolio')
+            ->assertSee('Personal collection')
+            ->assertSee('0 projects')
+            ->assertSee('Updated');
+
+        $this->actingAs($user)->get(route('portfolios.index', ['q' => 'Sidebar', 'sort' => 'title']))
+            ->assertOk()
+            ->assertSee('Sidebar portfolio')
+            ->assertDontSee('Card portfolio');
     }
 
     public function test_the_merged_editor_saves_portfolio_profile_appearance_and_private_images(): void

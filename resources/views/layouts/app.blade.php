@@ -29,11 +29,17 @@
         <header class="site-header">
             <a class="wordmark" href="{{ route('home') }}"><span class="wordmark-mark">f.</span>Folio Maker</a>
             <nav class="main-nav" aria-label="Main navigation">
-                <a href="{{ route('portfolios.index') }}" @class(['active' => request()->routeIs('portfolios.index')])>Home</a>
+                <a href="{{ route('portfolios.index') }}" @class(['active' => request()->routeIs('portfolios.index')])>
+                    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg>
+                    <span>Home</span>
+                </a>
                 <button class="site-theme-toggle" type="button" data-site-theme-toggle aria-label="Switch theme" aria-pressed="false" title="Switch theme">☾</button>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button class="button button-quiet button-small logout-button" type="submit">Log out <span aria-hidden="true">↗</span></button>
+                    <button class="button button-quiet button-small logout-button" type="submit">
+                        <span>Log out</span>
+                        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6"/><path d="m14 17 5-5-5-5M19 12H9"/></svg>
+                    </button>
                 </form>
             </nav>
         </header>

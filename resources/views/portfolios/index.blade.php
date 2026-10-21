@@ -39,9 +39,11 @@
         <p class="result-count">{{ $portfolios->count() }} {{ Str::plural('portfolio', $portfolios->count()) }} <span>·</span> updated as you go</p>
         <section class="portfolio-grid" aria-label="Your portfolios">
             @foreach ($portfolios as $portfolio)
-                <article class="portfolio-card">
+                @php($template = in_array(data_get($portfolio->appearance_data, 'style.template'), ['card', 'sidebar'], true) ? data_get($portfolio->appearance_data, 'style.template') : 'minimal')
+                <article @class(['portfolio-card', 'portfolio-card-'.$template])>
                     <a class="portfolio-card-image" href="{{ route('portfolios.show', $portfolio) }}" @if($portfolio->cover_image) style="background-image:url('{{ route('portfolios.media', [$portfolio, ...explode('/', $portfolio->cover_image)]) }}')" @endif aria-label="Open {{ $portfolio->title }}">
                         @unless($portfolio->cover_image)<span class="cover-placeholder">{{ Str::upper(Str::substr($portfolio->title, 0, 1)) }}</span>@endunless
+                        <span class="template-label">{{ $template === 'card' ? 'Card-based' : Str::ucfirst($template) }}</span>
                         <span class="card-open" aria-hidden="true">↗</span>
                     </a>
                     <div class="portfolio-card-body">

@@ -267,7 +267,7 @@
         throw new Error(messages.join(" ") || result.message || "Could not save your portfolio.");
       }
       localStorage.removeItem(storageKey);
-      setStatus("Saved", false, 2200);
+      setStatus(initial.id ? "Saved" : "Portfolio saved successfully.", false, 2200);
       setTimeout(() => window.location.assign(result.redirect), 2200);
     } catch (error) {
       setStatus(error.message || "Could not save your portfolio.", true, 2500);
